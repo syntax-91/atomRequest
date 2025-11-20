@@ -7,11 +7,13 @@ type TPropsReqXHR = {
 
 type TInitAtomRequest = {
   abortTimeoutDefaultValue: number;
+  logAbortHttpRequest: boolean;
 };
 
 class AtomRequest {
   xhr: XMLHttpRequest;
   abortTimeoutDefaultValue = 10000;
+  logAbortHttpRequest = false;
 
   constructor() {
     this.xhr = new XMLHttpRequest();
@@ -19,13 +21,17 @@ class AtomRequest {
 
   initAtomRequest(props: TInitAtomRequest) {
     this.abortTimeoutDefaultValue = props.abortTimeoutDefaultValue;
+    this.logAbortHttpRequest = props.logAbortHttpRequest;
   }
 
   request(props: TPropsReqXHR) {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         this.xhr.abort();
-        console.error("ERROR Atom: abort http request");
+
+        if (this.logAbortHttpRequest) {
+          console.log("atom-request: abort http request");
+        }
       }, this.abortTimeoutDefaultValue);
 
       this.xhr.open(props.httpMethod, props.url, true);
